@@ -1,1 +1,69 @@
 @import 'tailwindcss';
+
+
+@theme{
+  /* COLOUR */
+
+    /* Background Layers */
+    --color-bg-primary: #0D0F14;
+    --color-bg-secondary: #13161E;
+    --color-bg-elevated: #1A1E2A;
+
+    /* Brand Accents */
+    --color-accent-cyan: #00D4AA;
+    --color-accent-hover: #00B894;
+    --color-cyan-tint: rgba(0, 212, 170, 0.08);
+    --color-cyan-hover-tint: rgba(0, 212, 170, 0.06);
+    --color-cyan-focus-rim: rgba(0, 212, 170, 0.40);
+
+    /* Typography */
+    --color-text-primary: #E8EBF0;
+    --color-text-secondary: #8892A4;
+    --color-text-muted: #4A5568;
+
+    /* Borders */
+    --color-border-default: rgba(255, 255, 255, 0.06);
+    --color-border-active: rgba(0, 212, 170, 0.25);
+    --color-border-selected: #00D4AA;
+
+    /* Semantics / Status */
+    --color-success-green: #2ED573;
+    --color-warning-amber: #FFA502;
+    --color-danger-red: #FF4757;
+    --color-info-blue: #4A90D9;
+    --color-folder-gold: #F5A623;
+
+
+  /* Typography */
+  --font-inter : "Inter" , "sans-serif" ;
+  --font-mono : "JetBrains Mono" , "monospace";
+
+
+  /* Spacing */
+  --spacing-1 : 4px ;
+  --spacing-2 : 8px ;
+  --spacing-3 : 12px ;
+  --spacing-4 : 16px ;
+  --spacing-6 : 24px ;
+  --spacing-8 : 32px ;
+  --spacing-12 : 48px ;
+
+  /* Radius */
+  --radius-0 : 0;
+  --radius-4 : 4px ;
+  --radius-6 : 6px ;
+  --radius-8 : 8px ;
+  --radius-12 : 12px ;
+
+
+  /* File Icon Colors */
+  --color-file-pdf: #E74C3C;
+  --color-file-docx: #4A90D9;
+  --color-file-xlsx: #2ED573;
+  --color-file-png: #00D4AA;
+  --color-file-yaml: #4A90D9;
+  --color-file-txt: #8892A4;
+  --color-file-font: #FFA502;
+
+
+}
