@@ -20,17 +20,23 @@ function FileIcon({ name }) {
     return map[ext] ?? <File size={14} className="shrink-0" style={{ color: 'var(--color-file-txt)' }} />;
 }
 
-function TreeNode({ node, depth = 0 }) {
+function TreeNode({ node, depth = 0, path = [], onFolderSelect, activeFolderId }) {
     const [open, setOpen] = useState(false);
     const pl = 8 + depth * 14;
+    const currentPath = [...path, node.name];
+    const isActive = activeFolderId === node.id;
 
     if (node.type === 'folder') {
         return (
             <div>
                 <button
-                    onClick={() => setOpen(o => !o)}
+                    onClick={() => {
+                        setOpen(o => !o);
+                        onFolderSelect(node, currentPath);
+                    }}
                     style={{ paddingLeft: `${pl}px` }}
-                    className="flex items-center gap-1.5 w-full pr-2 py-1.25 rounded text-left hover:bg-bg-elevated group transition-colors"
+                    className={`flex items-center gap-1.5 w-full pr-2 py-1.25 rounded text-left transition-colors group
+                        ${isActive ? 'bg-bg-elevated text-text-primary' : 'hover:bg-bg-elevated'}`}
                 >
                     {open
                         ? <ChevronDown  size={11} className="text-text-muted shrink-0" />
@@ -40,12 +46,20 @@ function TreeNode({ node, depth = 0 }) {
                         ? <FolderOpen size={14} className="shrink-0" style={{ color: 'var(--color-folder-gold)' }} />
                         : <Folder     size={14} className="shrink-0" style={{ color: 'var(--color-folder-gold)' }} />
                     }
-                    <span className="text-xs text-text-secondary truncate group-hover:text-text-primary transition-colors font-inter">
+                    <span className={`text-xs truncate transition-colors font-inter
+                        ${isActive ? 'text-text-primary' : 'text-text-secondary group-hover:text-text-primary'}`}>
                         {node.name}
                     </span>
                 </button>
                 {open && node.children?.map(child => (
-                    <TreeNode key={child.id} node={child} depth={depth + 1} />
+                    <TreeNode
+                        key={child.id}
+                        node={child}
+                        depth={depth + 1}
+                        path={currentPath}
+                        onFolderSelect={onFolderSelect}
+                        activeFolderId={activeFolderId}
+                    />
                 ))}
             </div>
         );
@@ -64,9 +78,9 @@ function TreeNode({ node, depth = 0 }) {
     );
 }
 
-export default function Sidebar() {
+export default function Sidebar({ onFolderSelect, activeFolderId }) {
     return (
-        <aside className="flex flex-col w-56 h-screen bg-bg-secondary border-r border-border-default shrink-0">
+        <aside className="flex flex-col w-56 h-full bg-bg-secondary border-r border-border-default shrink-0">
 
             {/* Recents */}
             <div className="px-4 pt-5 pb-4">
@@ -91,7 +105,14 @@ export default function Sidebar() {
                 </span>
                 <div className="mt-2 space-y-0.5">
                     {vaultData.map(node => (
-                        <TreeNode key={node.id} node={node} depth={0} />
+                        <TreeNode
+                            key={node.id}
+                            node={node}
+                            depth={0}
+                            path={[]}
+                            onFolderSelect={onFolderSelect}
+                            activeFolderId={activeFolderId}
+                        />
                     ))}
                 </div>
             </div>
