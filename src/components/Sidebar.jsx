@@ -3,7 +3,9 @@ import {ChevronRight, ChevronDown, Folder, FolderOpen, FileText, FileImage, File
 import vaultData from "../../data.json";
 
 function FileIcon({ name }) {
-    if (name.startsWith('.')) return <FileCode size={14} className="shrink-0" style={{ color: 'var(--color-danger-red)' }} />;
+    if (name.startsWith('.')){
+        return <FileCode size={14} className="shrink-0" style={{ color: 'var(--color-danger-red)' }} />;
+    } 
 
     const ext = name.split('.').pop().toLowerCase();
     const map = {
@@ -20,11 +22,12 @@ function FileIcon({ name }) {
     return map[ext] ?? <File size={14} className="shrink-0" style={{ color: 'var(--color-file-txt)' }} />;
 }
 
-function TreeNode({ node, depth = 0, path = [], onFolderSelect, activeFolderId }) {
+function TreeNode({ node, depth = 0, path = [], onFolderSelect, activeFolderId, onFileSelect, activeFileId }) {
     const [open, setOpen] = useState(false);
     const pl = 8 + depth * 14;
     const currentPath = [...path, node.name];
     const isActive = activeFolderId === node.id;
+    const isFileActive = activeFileId === node.id;
 
     if (node.type === 'folder') {
         return (
@@ -59,6 +62,8 @@ function TreeNode({ node, depth = 0, path = [], onFolderSelect, activeFolderId }
                         path={currentPath}
                         onFolderSelect={onFolderSelect}
                         activeFolderId={activeFolderId}
+                        onFileSelect={onFileSelect}
+                        activeFileId={activeFileId}
                     />
                 ))}
             </div>
@@ -67,18 +72,21 @@ function TreeNode({ node, depth = 0, path = [], onFolderSelect, activeFolderId }
 
     return (
         <button
+            onClick={() => onFileSelect(node, currentPath)}
             style={{ paddingLeft: `${pl + 16}px` }}
-            className="flex items-center gap-1.5 w-full pr-2 py-1.25 rounded text-left hover:bg-bg-elevated group transition-colors"
+            className={`flex items-center gap-1.5 w-full pr-2 py-1.25 rounded text-left transition-colors group
+                ${isFileActive ? 'bg-cyan-tint border-l-2 border-border-selected' : 'hover:bg-bg-elevated'}`}
         >
             <FileIcon name={node.name} />
-            <span className="text-xs text-text-secondary truncate group-hover:text-text-primary transition-colors font-inter">
+            <span className={`text-xs truncate transition-colors font-inter
+                ${isFileActive ? 'text-text-primary' : 'text-text-secondary group-hover:text-text-primary'}`}>
                 {node.name}
             </span>
         </button>
     );
 }
 
-export default function Sidebar({ onFolderSelect, activeFolderId }) {
+export default function Sidebar({ onFolderSelect, activeFolderId, onFileSelect, activeFileId }) {
     return (
         <aside className="flex flex-col w-56 h-full bg-bg-secondary border-r border-border-default shrink-0">
 
@@ -87,7 +95,7 @@ export default function Sidebar({ onFolderSelect, activeFolderId }) {
                 <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                         <Clock size={13} className="text-text-muted" />
-                        <span className="text-[10px] font-semibold tracking-widest text-text-muted font-inter uppercase">
+                        <span className="text-[10px] font-semibold tracking-widest text-text-muted font-mono uppercase">
                             Recents
                         </span>
                     </div>
@@ -112,6 +120,8 @@ export default function Sidebar({ onFolderSelect, activeFolderId }) {
                             path={[]}
                             onFolderSelect={onFolderSelect}
                             activeFolderId={activeFolderId}
+                            onFileSelect={onFileSelect}
+                            activeFileId={activeFileId}
                         />
                     ))}
                 </div>

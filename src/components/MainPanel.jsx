@@ -18,9 +18,13 @@ function CardIcon({ name }) {
     return map[ext] ?? <File size={32} style={{ color: 'var(--color-file-txt)' }} />;
 }
 
-function FileCard({ node }) {
+function FileCard({ node, isActive, onClick }) {
     return (
-        <button className="flex flex-col items-center justify-center gap-2 p-4 rounded-lg bg-bg-elevated border border-border-default hover:border-border-active transition-colors w-36 h-32">
+        <button
+            onClick={onClick}
+            className={`flex flex-col items-center justify-center gap-2 p-4 rounded-lg bg-bg-elevated border transition-colors w-36 h-32
+                ${isActive ? 'border-border-selected' : 'border-border-default hover:border-border-active'}`}
+        >
             <CardIcon name={node.name} />
             <span className="text-xs text-text-primary truncate w-full text-center font-inter">{node.name}</span>
             {node.size && (
@@ -39,7 +43,7 @@ function FolderCard({ node }) {
     );
 }
 
-export default function MainPanel({ folder, breadcrumb = [] }) {
+export default function MainPanel({ folder, breadcrumb = [], onFileSelect, activeFileId }) {
     return (
         <div className="flex flex-col flex-1 h-full overflow-hidden">
 
@@ -73,7 +77,12 @@ export default function MainPanel({ folder, breadcrumb = [] }) {
                         {folder.children?.map(node => (
                             node.type === 'folder'
                                 ? <FolderCard key={node.id} node={node} />
-                                : <FileCard   key={node.id} node={node} />
+                                : <FileCard
+                                    key={node.id}
+                                    node={node}
+                                    isActive={activeFileId === node.id}
+                                    onClick={() => onFileSelect(node, [...breadcrumb, node.name])}
+                                  />
                         ))}
                     </div>
                 </div>
