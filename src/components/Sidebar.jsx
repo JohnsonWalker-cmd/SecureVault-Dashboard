@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState  , useRef} from "react";
 import {ChevronRight, ChevronDown, Folder, FolderOpen, FileText, FileImage, FileCode, FileSpreadsheet, File,Clock, Settings, KeyRound} from "lucide-react";
 import vaultData from "../../data.json";
 
@@ -22,21 +22,56 @@ function FileIcon({ name }) {
     return map[ext] ?? <File size={14} className="shrink-0" style={{ color: 'var(--color-file-txt)' }} />;
 }
 
-function TreeNode({ node, depth = 0, path = [], onFolderSelect, activeFolderId, onFileSelect, activeFileId }) {
+function TreeNode({ node, depth = 0, path = [], onFolderSelect, activeFolderId, onFileSelect, activeFileId , treeRef}) {
     const [open, setOpen] = useState(false);
     const pl = 8 + depth * 14;
     const currentPath = [...path, node.name];
     const isActive = activeFolderId === node.id;
     const isFileActive = activeFileId === node.id;
 
+
+    const handleKeyDown = (e) => {
+        const items = [...treeRef.current.querySelectorAll('button[data-tree-item]')];
+        const index = items.indexOf(e.currentTarget);
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            items[index + 1]?.focus();
+        }
+
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            items[index - 1]?.focus();
+        }
+
+        if (e.key === 'ArrowRight' && node.type === 'folder' && !open) {
+            setOpen(true);
+        }
+
+        if (e.key === 'ArrowLeft' && node.type === 'folder' && open) {
+            setOpen(false);
+        }
+
+        if (e.key === 'Enter') {
+            if (node.type === 'file') onFileSelect(node, currentPath);
+            if (node.type === 'folder') setOpen(o => !o);
+        }
+    };
+
+
+
     if (node.type === 'folder') {
         return (
             <div>
                 <button
+                    tabIndex={0}
+                    data-tree-item
                     onClick={() => {
                         setOpen(o => !o);
                         onFolderSelect(node, currentPath);
+                        
                     }}
+                    onKeyDown={handleKeyDown}
                     style={{ paddingLeft: `${pl}px` }}
                     className={`flex items-center gap-1.5 w-full pr-2 py-1.25 rounded text-left transition-colors group
                         ${isActive ? 'bg-bg-elevated text-text-primary' : 'hover:bg-bg-elevated'}`}
@@ -64,15 +99,20 @@ function TreeNode({ node, depth = 0, path = [], onFolderSelect, activeFolderId, 
                         activeFolderId={activeFolderId}
                         onFileSelect={onFileSelect}
                         activeFileId={activeFileId}
+                        treeRef={treeRef}
                     />
                 ))}
             </div>
         );
     }
 
+    
     return (
         <button
+            tabIndex={0}
+            data-tree-item
             onClick={() => onFileSelect(node, currentPath)}
+            onKeyDown={handleKeyDown}
             style={{ paddingLeft: `${pl + 16}px` }}
             className={`flex items-center gap-1.5 w-full pr-2 py-1.25 rounded text-left transition-colors group
                 ${isFileActive ? 'bg-cyan-tint border-l-2 border-border-selected' : 'hover:bg-bg-elevated'}`}
@@ -87,6 +127,7 @@ function TreeNode({ node, depth = 0, path = [], onFolderSelect, activeFolderId, 
 }
 
 export default function Sidebar({ onFolderSelect, activeFolderId, onFileSelect, activeFileId }) {
+    const treeRef = useRef(null)
     return (
         <aside className="flex flex-col w-56 h-full bg-bg-secondary border-r border-border-default shrink-0">
 
@@ -111,7 +152,7 @@ export default function Sidebar({ onFolderSelect, activeFolderId, onFileSelect, 
                 <span className="text-[10px] font-semibold tracking-widest text-text-muted font-inter uppercase px-2 mb-2 block">
                     Vault Explorer
                 </span>
-                <div className="mt-2 space-y-0.5">
+                <div className="mt-2 space-y-0.5" ref={treeRef}>
                     {vaultData.map(node => (
                         <TreeNode
                             key={node.id}
@@ -122,6 +163,7 @@ export default function Sidebar({ onFolderSelect, activeFolderId, onFileSelect, 
                             activeFolderId={activeFolderId}
                             onFileSelect={onFileSelect}
                             activeFileId={activeFileId}
+                            treeRef={treeRef}
                         />
                     ))}
                 </div>

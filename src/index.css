@@ -67,3 +67,15 @@
 
 
 }
+
+/* Strip the browser default focus ring from everything */
+*:focus {
+    outline: none;
+}
+
+/* Restore a branded focus ring for keyboard navigation only */
+[data-tree-item]:focus-visible {
+    outline: 2px solid var(--color-accent-cyan);
+    outline-offset: 1px;
+    border-radius: 4px;
+}
