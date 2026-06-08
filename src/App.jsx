@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import MainPanel from "./components/MainPanel";
@@ -7,7 +7,10 @@ import PropertiesPanel from "./components/PropertiesPanel";
 function App() {
   const [activeFolder, setActiveFolder] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [ recents , setRecents] = useState([]);
+  const [ recents , setRecents] = useState(()=> {
+    const saved = localStorage.getItem("recents") ;
+    return saved ? JSON.parse(saved) : [] ;
+  });
 
   const handleFolderSelect = (node, path) => {
     setActiveFolder({ node, path });
@@ -21,6 +24,10 @@ function App() {
         return [{ node , path , openedAt : new Date()}, ...deduped].slice(0,8);
     });
   };
+
+  useEffect(() => {
+    localStorage.setItem("recents", JSON.stringify(recents));
+  }, [recents]);
 
   return (
     <div className="flex flex-col h-screen bg-bg-primary">
