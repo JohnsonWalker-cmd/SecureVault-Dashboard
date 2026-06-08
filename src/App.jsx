@@ -7,6 +7,7 @@ import PropertiesPanel from "./components/PropertiesPanel";
 function App() {
   const [activeFolder, setActiveFolder] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [ recents , setRecents] = useState([]);
 
   const handleFolderSelect = (node, path) => {
     setActiveFolder({ node, path });
@@ -15,6 +16,10 @@ function App() {
 
   const handleFileSelect = (node, path) => {
     setSelectedFile({ node, path });
+    setRecents(prev => {
+        const deduped = prev.filter(r => r.node.id !== node.id);
+        return [{ node , path , openedAt : new Date()}, ...deduped].slice(0,8);
+    });
   };
 
   return (
@@ -26,6 +31,7 @@ function App() {
           activeFolderId={activeFolder?.node.id}
           onFileSelect={handleFileSelect}
           activeFileId={selectedFile?.node.id}
+          recents={recents}
         />
         <MainPanel
           folder={activeFolder?.node}

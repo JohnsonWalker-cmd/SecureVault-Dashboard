@@ -2,6 +2,15 @@ import { useState  , useRef} from "react";
 import {ChevronRight, ChevronDown, Folder, FolderOpen, FileText, FileImage, FileCode, FileSpreadsheet, File,Clock, Settings, KeyRound} from "lucide-react";
 import vaultData from "../../data.json";
 
+
+function timeAgo(date){
+    const s = Math.floor((Date.now() - date) / 1000);
+    if( s < 60 ) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+
+    return `${Math.floor(s / 3600)}h ago`;
+}
+
 function FileIcon({ name }) {
     if (name.startsWith('.')){
         return <FileCode size={14} className="shrink-0" style={{ color: 'var(--color-danger-red)' }} />;
@@ -126,7 +135,7 @@ function TreeNode({ node, depth = 0, path = [], onFolderSelect, activeFolderId, 
     );
 }
 
-export default function Sidebar({ onFolderSelect, activeFolderId, onFileSelect, activeFileId }) {
+export default function Sidebar({ onFolderSelect, activeFolderId, onFileSelect, activeFileId  , recents = []}) {
     const treeRef = useRef(null)
     return (
         <aside className="flex flex-col w-56 h-full bg-bg-secondary border-r border-border-default shrink-0">
@@ -140,9 +149,31 @@ export default function Sidebar({ onFolderSelect, activeFolderId, onFileSelect, 
                             Recents
                         </span>
                     </div>
-                    <span className="text-[10px] text-text-muted bg-bg-elevated px-1.5 py-0.5 rounded">0</span>
+                    <span className="text-[10px] text-accent-cyan bg-bg-elevated px-1.5 py-0.5 rounded">{recents.length}</span>
                 </div>
-                <p className="text-[11px] text-text-muted text-center py-3 font-inter">No file opened yet</p>
+                {recents.length === 0 ? (
+                    <p className="text-[11px] text-text-muted text-center py-3 font-inter">
+                        No file opened yet
+                    </p>
+                ) : (
+                    <div className="space-y-0.5">
+                        {recents.map(({ node, path, openedAt }) => (
+                            <button
+                                key={node.id}
+                                onClick={() => onFileSelect(node, path)}
+                                className="flex items-center gap-2 w-full px-2 py-1.5 rounded hover:bg-bg-elevated group transition-colors"
+                            >
+                                <FileIcon name={node.name} />
+                                <span className="text-xs text-text-secondary truncate flex-1 text-left group-hover:text-text-primary font-inter">
+                                    {node.name}
+                                </span>
+                                <span className="text-[10px] text-text-muted font-mono shrink-0">
+                                    {timeAgo(openedAt)}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <div className="border-t border-border-default mx-4" />
