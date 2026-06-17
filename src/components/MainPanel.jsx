@@ -44,6 +44,7 @@ function FolderCard({ node }) {
 }
 
 export default function MainPanel({ folder, breadcrumb = [], onFileSelect, activeFileId }) {
+    const isEmpty = folder?.children?.length === 0 ;
     return (
         <div className="flex flex-col flex-1 h-full overflow-hidden">
 
@@ -71,6 +72,14 @@ export default function MainPanel({ folder, breadcrumb = [], onFileSelect, activ
                         Click any folder in the tree to view its contents here
                     </p>
                 </div>
+            ) : isEmpty ? (
+                <div className="flex flex-col items-center justify-center flex-1 gap-4">
+                    <Folder size={52} className="text-text-muted" strokeWidth={1} />
+                    <p className="text-sm text-text-muted font-mono tracking-wide">
+                        This folder is empty
+                    </p>
+                </div>
+
             ) : (
                 <div className="flex-1 overflow-auto p-6">
                     <div className="flex flex-wrap gap-3">

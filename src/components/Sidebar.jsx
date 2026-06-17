@@ -9,8 +9,9 @@ function timeAgo(date){
     const s = Math.floor((Date.now() - timestamp) / 1000);
     if( s < 60 ) return `${s}s ago`;
     if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+    if(s < 86400) return `${Math.floor(s / 3600)}h ago`;
 
-    return `${Math.floor(s / 3600)}h ago`;
+    return `${Math.floor(s / 86400)}days ago`;
 }
 
 function FileIcon({ name }) {
@@ -85,7 +86,7 @@ function TreeNode({ node, depth = 0, path = [], onFolderSelect, activeFolderId, 
                     onKeyDown={handleKeyDown}
                     style={{ paddingLeft: `${pl}px` }}
                     className={`flex items-center gap-1.5 w-full pr-2 py-1.25 rounded text-left transition-colors group
-                        ${isActive ? 'bg-bg-elevated text-text-primary' : 'hover:bg-bg-elevated'}`}
+                        ${isActive ? 'bg-red-500 text-text-primary' : 'hover:bg-bg-elevated'}`}
                 >
                     {open
                         ? <ChevronDown  size={11} className="text-text-muted shrink-0" />
@@ -113,6 +114,7 @@ function TreeNode({ node, depth = 0, path = [], onFolderSelect, activeFolderId, 
                         treeRef={treeRef}
                     />
                 ))}
+                {open && node.children === 0 }
             </div>
         );
     }
